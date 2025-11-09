@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bloom | Child Growth Tracker</title>
+  <meta name="description" content="Track your child's growth with beautiful charts, weight and height logs, and smart insights.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <link rel="stylesheet" href="styles/main.css">
+  <style type="text/tailwindcss" data-teda="tailwind-apply">
+    @layer components {
+      :root { --brand: #1f62ff; --brand-ink: #0c2a6e; --accent: #ff7b54; --sun: #f5b800; --paper: #0b1020; }
+      .btn-primary { @apply inline-flex items-center justify-center whitespace-nowrap bg-[color:var(--brand)] text-white px-5 py-3 rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-600 active:translate-y-px transition focus:outline-none focus:ring-2 focus:ring-blue-200; }
+      .btn-secondary { @apply inline-flex items-center justify-center whitespace-nowrap bg-white border border-slate-200 text-slate-800 px-5 py-3 rounded-xl hover:bg-slate-50 transition focus:outline-none focus:ring-2 focus:ring-blue-100; }
+      .btn-ghost { @apply inline-flex items-center justify-center whitespace-nowrap text-[color:var(--brand)] px-4 py-2 rounded-lg hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-100; }
+      .chip { @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/70 backdrop-blur text-slate-700 shadow; }
+      .card-elevated { @apply bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl shadow-slate-900/20 border border-slate-100; }
+      .input { @apply w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[color:var(--brand)] focus:ring-2 focus:ring-blue-100 outline-none transition bg-white; }
+      .hero-bg { @apply relative overflow-hidden; }
+      .hero-bg::before { content: ""; @apply absolute inset-0; background: radial-gradient(1200px 600px at 20% 10%, rgba(31,98,255,0.15), transparent 60%), radial-gradient(800px 500px at 90% 30%, rgba(245,184,0,0.18), transparent 60%), radial-gradient(1000px 600px at 50% 90%, rgba(255,123,84,0.16), transparent 60%); }
+      .pattern-dots { background-image: radial-gradient(rgba(12,42,110,0.07) 1px, transparent 1px); background-size: 12px 12px; }
+      .link-cta { @apply text-[color:var(--brand)] underline decoration-2 underline-offset-4 hover:text-blue-700; }
+      .feature-block { @apply rounded-2xl p-6 md:p-8 bg-white border border-slate-100 shadow-lg transition hover:shadow-xl; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800">
+  <header class="relative z-10">
+    <nav class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="size-9 rounded-xl bg-[color:var(--brand)] flex items-center justify-center shadow-lg shadow-blue-500/30">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-white"><path d="M12 21s7-4.438 7-10a7 7 0 1 0-14 0c0 5.562 7 10 7 10Z" stroke="currentColor" stroke-width="2"/></svg>
+        </div>
+        <span class="font-semibold tracking-tight text-lg">Bloom</span>
+      </a>
+      <div class="hidden sm:flex items-center gap-3">
+        <a class="btn-ghost" href="#features">Features</a>
+        <a class="btn-ghost" href="#how">How it works</a>
+        <a class="btn-primary" href="app.html">Open the tracker</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero-bg pattern-dots pb-16 pt-6">
+      <div class="max-w-5xl mx-auto px-4 -mt-2">
+        <div class="card-elevated relative p-6 sm:p-10 md:p-14">
+          <div class="absolute -top-8 -right-8 rotate-12 hidden md:block" aria-hidden="true">
+            <div class="bg-[color:var(--sun)] text-[color:var(--brand-ink)] font-bold px-4 py-2 rounded-xl shadow-lg">Parent-approved</div>
+          </div>
+          <div class="flex flex-col gap-6">
+            <div class="flex items-center gap-3">
+              <span class="chip"><span class="size-2 rounded-full bg-[color:var(--brand)]"></span> Private and on your device</span>
+              <span class="chip hidden sm:inline-flex"><span class="size-2 rounded-full bg-[color:var(--accent)]"></span> Beautiful charts</span>
+            </div>
+            <h1 class="text-4xl sm:text-5xl leading-[1.1] font-extrabold text-slate-900 tracking-tight">
+              Track your child's growth with clarity and calm
+            </h1>
+            <p class="text-lg sm:text-xl text-slate-600 max-w-3xl">
+              Log height, weight, head circumference and more. See trends at a glance, keep milestones in one place, and feel confident at every checkup.
+            </p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+              <a href="app.html" class="btn-primary text-base">Open the tracker</a>
+              <a href="#features" class="btn-secondary text-base">Explore features</a>
+            </div>
+            <div class="grid grid-cols-12 gap-3 pt-6">
+              <div class="col-span-8 sm:col-span-9 bg-blue-50 rounded-2xl p-4 border border-blue-100 shadow-inner">
+                <p class="text-sm text-slate-700">
+                  Built for real families. Works offline, syncs with your memory, not the cloud. Your data lives on your device using private storage.
+                </p>
+              </div>
+              <div class="col-span-4 sm:col-span-3 flex items-center justify-center">
+                <div class="rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm text-center">
+                  <div class="text-xs text-slate-500">Today</div>
+                  <div class="font-semibold">Add a check-in</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="features" class="max-w-6xl mx-auto px-4 mt-14">
+        <div class="mb-8">
+          <h2 class="text-2xl sm:text-3xl font-bold">Why parents love Bloom</h2>
+        </div>
+        <div class="space-y-6">
+          <div class="feature-block md:max-w-3xl">
+            <div class="flex items-start gap-4">
+              <div class="size-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 20V6a2 2 0 0 1 2-2h6m8 8v8M14 4l6 6" stroke="currentColor" stroke-width="2"/></svg>
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg">Simple logging</h3>
+                <p class="text-slate-600">Add measurements in seconds with smart unit detection and friendly validation.</p>
+              </div>
+            </div>
+          </div>
+          <div class="feature-block md:ml-24">
+            <div class="flex items-start gap-4">
+              <div class="size-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M12 3v18" stroke="currentColor" stroke-width="2"/></svg>
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg">Clear growth charts</h3>
+                <p class="text-slate-600">Beautiful, responsive charts turn your logs into insights. See trends over weeks and months.</p>
+              </div>
+            </div>
+          </div>
+          <div class="feature-block md:max-w-4xl">
+            <div class="flex items-start gap-4">
+              <div class="size-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-4.438 7-10a7 7 0 1 0-14 0c0 5.562 7 10 7 10Z" stroke="currentColor" stroke-width="2"/></svg>
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg">Private by default</h3>
+                <p class="text-slate-600">Everything stays on your device using local storage. Export or import when you want.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-10 flex flex-col sm:flex-row items-center gap-4">
+          <a href="app.html" class="btn-primary">Start tracking now</a>
+          <a href="#how" class="btn-ghost">See how it works</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" class="py-16">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="feature-block">
+            <h4 class="font-semibold mb-2">1. Create a child profile</h4>
+            <p class="text-slate-600">Add name and birthdate for accurate age tracking. Switch between children with a tap.</p>
+          </div>
+          <div class="feature-block">
+            <h4 class="font-semibold mb-2">2. Log measurements</h4>
+            <p class="text-slate-600">Record weight, height, and optional head circumference. Metric or imperial with easy toggles.</p>
+          </div>
+          <div class="feature-block">
+            <h4 class="font-semibold mb-2">3. Review insights</h4>
+            <p class="text-slate-600">See BMI and growth velocity summaries, plus a clean history you can export anytime.</p>
+          </div>
+        </div>
+        <div class="text-center mt-10">
+          <a href="app.html" class="btn-secondary">Open the app</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="py-10 border-t border-slate-200 bg-white/70 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-slate-600">Made with care for busy parents. Your data is yours.</p>
+      <a href="app.html" class="btn-primary">Start now</a>
+    </div>
+  </footer>
+
+  <script>
+    $(function(){
+      // Smooth scroll for in-page links
+      $('a[href^="#"]').on('click', function(e){
+        const target = $(this.getAttribute('href'));
+        if (target.length) { e.preventDefault(); $('html, body').animate({ scrollTop: target.offset().top - 16 }, 500); }
+      });
+    });
+  </script>
+  <script src="scripts/helpers.js"></script>
+  <script src="scripts/ui.js"></script>
+  <script src="scripts/main.js"></script>
+</body>
+</html>

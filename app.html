@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bloom Tracker — App</title>
+  <meta name="description" content="Track your child's growth with logs, charts, and insights.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles/main.css">
+  <style type="text/tailwindcss" data-teda="tailwind-apply">
+    @layer components {
+      :root { --brand: #1f62ff; --brand-ink: #0c2a6e; --accent: #ff7b54; --sun: #f5b800; }
+      .btn-primary { @apply inline-flex items-center justify-center whitespace-nowrap bg-[color:var(--brand)] text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-600 active:translate-y-px transition focus:outline-none focus:ring-2 focus:ring-blue-200; }
+      .btn-secondary { @apply inline-flex items-center justify-center whitespace-nowrap bg-white border border-slate-200 text-slate-800 px-4 py-2.5 rounded-xl hover:bg-slate-50 transition focus:outline-none focus:ring-2 focus:ring-blue-100; }
+      .btn-ghost { @apply inline-flex items-center justify-center whitespace-nowrap text-[color:var(--brand)] px-3 py-2 rounded-lg hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-100; }
+      .icon-btn { @apply inline-flex items-center justify-center size-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-100; }
+      .chip { @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 shadow-sm; }
+      .card { @apply bg-white rounded-2xl border border-slate-200 shadow-sm; }
+      .input { @apply w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-[color:var(--brand)] focus:ring-2 focus:ring-blue-100 outline-none transition bg-white; }
+      .label { @apply text-sm font-medium text-slate-700; }
+      .stat { @apply p-4 rounded-xl bg-slate-50 border border-slate-200; }
+      .table-wrap { @apply overflow-x-auto -mx-2 sm:mx-0; }
+      .pill { @apply px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer select-none whitespace-nowrap; }
+      .pill.active { @apply bg-[color:var(--brand)] text-white border-transparent; }
+      .modal-overlay { @apply fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50; }
+      .modal { @apply bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+  <header class="border-b border-slate-200 bg-white/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="icon-btn" aria-label="Back to landing">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2"/></svg>
+        </a>
+        <div class="flex items-center gap-3">
+          <div class="size-9 rounded-xl bg-[color:var(--brand)] flex items-center justify-center shadow-sm">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-white"><path d="M12 21s7-4.438 7-10a7 7 0 1 0-14 0c0 5.562 7 10 7 10Z" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+          <div>
+            <div class="font-semibold leading-tight">Bloom Tracker</div>
+            <div class="text-xs text-slate-500">Private on your device</div>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btn-export" class="btn-secondary text-sm">Export</button>
+        <button id="btn-import" class="btn-secondary text-sm">Import</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <section aria-label="Children" class="card p-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <div id="child-chips" class="flex flex-wrap items-center gap-2"></div>
+        <button id="btn-add-child" class="btn-primary text-sm">Add child</button>
+        <div class="ml-auto flex items-center gap-2">
+          <div class="chip" title="Unit system">
+            <span class="text-xs text-slate-500">Units</span>
+            <button class="pill" data-unit="metric">Metric</button>
+            <button class="pill" data-unit="imperial">Imperial</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid md:grid-cols-3 gap-4" aria-label="Highlights">
+      <div class="stat">
+        <div class="text-xs text-slate-500">Latest Weight</div>
+        <div id="stat-weight" class="text-2xl font-semibold">—</div>
+      </div>
+      <div class="stat">
+        <div class="text-xs text-slate-500">Latest Height</div>
+        <div id="stat-height" class="text-2xl font-semibold">—</div>
+      </div>
+      <div class="stat">
+        <div class="text-xs text-slate-500">BMI</div>
+        <div id="stat-bmi" class="text-2xl font-semibold">—</div>
+      </div>
+    </section>
+
+    <section class="card p-4" aria-label="Add measurement">
+      <div class="flex items-center justify-between">
+        <h2 class="font-semibold">Add measurement</h2>
+        <button id="toggle-form" class="btn-ghost" aria-expanded="true">Hide</button>
+      </div>
+      <form id="measurement-form" class="grid md:grid-cols-5 gap-3 mt-3" novalidate>
+        <div>
+          <label class="label" for="date">Date</label>
+          <input id="date" type="date" class="input" required />
+          <p class="form-error text-rose-600 text-xs mt-1 hidden">Please select a valid date.</p>
+        </div>
+        <div>
+          <label class="label" for="weight">Weight</label>
+          <input id="weight" type="number" min="0" step="0.01" class="input" placeholder="e.g. 7.8" />
+          <p class="text-xs text-slate-500 mt-1" id="weight-unit">kg</p>
+          <p class="form-error text-rose-600 text-xs mt-1 hidden">Enter a valid weight.</p>
+        </div>
+        <div>
+          <label class="label" for="height">Height</label>
+          <input id="height" type="number" min="0" step="0.1" class="input" placeholder="e.g. 68" />
+          <p class="text-xs text-slate-500 mt-1" id="height-unit">cm</p>
+          <p class="form-error text-rose-600 text-xs mt-1 hidden">Enter a valid height.</p>
+        </div>
+        <div>
+          <label class="label" for="head">Head circumference (optional)</label>
+          <input id="head" type="number" min="0" step="0.1" class="input" placeholder="e.g. 42" />
+          <p class="text-xs text-slate-500 mt-1" id="head-unit">cm</p>
+        </div>
+        <div class="flex items-end">
+          <button type="submit" class="btn-primary w-full">Save</button>
+        </div>
+        <div class="md:col-span-5">
+          <label class="label" for="notes">Notes (optional)</label>
+          <input id="notes" type="text" maxlength="120" class="input" placeholder="Shot today, nap time, appetite..." />
+        </div>
+      </form>
+    </section>
+
+    <section class="card p-4 space-y-3" aria-label="Chart">
+      <div class="flex flex-wrap items-center gap-2">
+        <h2 class="font-semibold mr-2">Growth chart</h2>
+        <button class="pill active" data-metric="weight">Weight</button>
+        <button class="pill" data-metric="height">Height</button>
+        <button class="pill" data-metric="bmi">BMI</button>
+        <button class="pill" data-metric="head">Head</button>
+      </div>
+      <div class="relative">
+        <canvas id="chart" height="260" class="w-full"></canvas>
+        <div id="chart-tooltip" class="hidden absolute bg-white border border-slate-200 shadow-lg rounded-lg px-3 py-2 text-xs"></div>
+      </div>
+    </section>
+
+    <section class="card p-4" aria-label="History">
+      <div class="flex items-center justify-between">
+        <h2 class="font-semibold">Measurement history</h2>
+        <div class="text-xs text-slate-500" id="entries-count"></div>
+      </div>
+      <div class="table-wrap mt-3">
+        <table class="min-w-full text-sm">
+          <thead class="text-left text-slate-500">
+            <tr>
+              <th class="py-2 pr-4">Date</th>
+              <th class="py-2 pr-4">Age</th>
+              <th class="py-2 pr-4">Weight</th>
+              <th class="py-2 pr-4">Height</th>
+              <th class="py-2 pr-4">Head</th>
+              <th class="py-2 pr-4">BMI</th>
+              <th class="py-2 pr-4">Notes</th>
+              <th class="py-2 pr-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="entries" class="align-top"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="modal-root" class="hidden"></div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="scripts/helpers.js"></script>
+  <script src="scripts/ui.js"></script>
+  <script src="scripts/main.js"></script>
+</body>
+</html>
