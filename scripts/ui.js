@@ -324,24 +324,58 @@
 
   // Export/Import
   function doExport(){
-    const data = JSON.stringify(S.state, null, 2);
-    openModal(`
-      <div class="flex items-start justify-between gap-3 mb-3">
-        <h3 class="font-semibold">Export data</h3>
-        <button class="icon-btn" id="modal-close" aria-label="Close">✕</button>
-      </div>
-      <p class="text-sm text-slate-600 mb-3">Copy your data below. Keep it private.</p>
-      <textarea class="input !h-48" readonly>${$('<div/>').text(data).html()}<\/textarea>
-      <div class="mt-4 flex items-center justify-end gap-2">
-        <button class="btn-secondary" id="copy-json">Copy</button>
-        <button class="btn-primary" id="done-json">Done</button>
-      </div>
-    `);
-    $("#modal-close, #done-json").on("click", closeModal);
-    $("#copy-json").on("click", function(){
-      const ta = $("textarea")[0]; ta.select(); ta.setSelectionRange(0, ta.value.length);
-      try { const ok = document.execCommand("copy"); if (ok) $(this).text("Copied"); } catch(e) {}
-    });
+    // Build external schema payload
+    const payload = {
+      version: 1,
+      units: S.state.unitSystem === "imperial" ? "imperial" : "metric",
+      children: (S.state.children || []).map(c => ({
+        id: c.id,
+        name: c.name,
+        birthdate: c.birthdate,
+        sex: typeof c.sex !== "undefined" ? c.sex : null,
+        color: typeof c.color !== "undefined" ? c.color : null,
+        measurements: (c.entries || []).map(e => ({
+          id: e.id,
+          date: e.date,
+          weightKg: Number.isFinite(e.weightKg) ? Number(e.weightKg) : null,
+          heightCm: Number.isFinite(e.heightCm) ? Number(e.heightCm) : null,
+          headCm: Number.isFinite(e.headCm) ? Number(e.headCm) : null,
+          notes: e.notes || ""
+        }))
+      })),
+      selectedChildId: S.state.activeChildId || null
+    };
+
+    const json = JSON.stringify(payload, null, 2);
+    try {
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "bloom-export.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+    } catch (e) {
+      // Fallback: show modal with JSON to copy
+      openModal(`
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <h3 class="font-semibold">Export data</h3>
+          <button class="icon-btn" id="modal-close" aria-label="Close">✕</button>
+        </div>
+        <p class="text-sm text-slate-600 mb-3">Copy the JSON below and save it somewhere safe.</p>
+        <textarea class="input !h-48" readonly>${$('<div/>').text(json).html()}</textarea>
+        <div class="mt-4 flex items-center justify-end gap-2">
+          <button class="btn-primary" id="copy-json">Copy</button>
+        </div>
+      `);
+      $("#modal-close").on("click", closeModal);
+      $("#copy-json").on("click", function(){
+        const ta = $("textarea").get(0);
+        if (ta) { ta.select(); document.execCommand("copy"); }
+      });
+    }
   }
 
   function doImport(){
@@ -351,7 +385,7 @@
         <button class="icon-btn" id="modal-close" aria-label="Close">✕</button>
       </div>
       <p class="text-sm text-slate-600 mb-3">Paste your exported JSON below. This will replace your current data.</p>
-      <textarea class="input !h-48" placeholder="{ ... }"><\/textarea>
+      <textarea class="input !h-48" placeholder="{ ... }"></textarea>
       <div class="mt-4 flex items-center justify-between gap-2">
         <button class="btn-ghost text-rose-600" id="wipe">Erase everything</button>
         <div class="flex items-center gap-2">
@@ -375,7 +409,32 @@
       if (!parsed || !Array.isArray(parsed.children)) {
         alert("Invalid JSON"); return;
       }
-      S.state = parsed; U.saveState(S.state); closeModal(); window.App.render();
+      // Normalize external schema (versioned) into internal state
+      const ns = { unitSystem: parsed.units === "imperial" ? "imperial" : "metric", activeChildId: parsed.selectedChildId || parsed.activeChildId || null, children: [] };
+      ns.children = (parsed.children || []).map(ch => {
+        const src = Array.isArray(ch.measurements) ? ch.measurements : (Array.isArray(ch.entries) ? ch.entries : []);
+        const child = {
+          id: ch.id || U.uid(),
+          name: ch.name || "Child",
+          birthdate: ch.birthdate || U.todayStr(),
+          entries: (src || []).map(m => ({
+            id: m.id || U.uid(),
+            date: m.date || U.todayStr(),
+            weightKg: Number.isFinite(m.weightKg) ? Number(m.weightKg) : NaN,
+            heightCm: Number.isFinite(m.heightCm) ? Number(m.heightCm) : NaN,
+            headCm: Number.isFinite(m.headCm) ? Number(m.headCm) : NaN,
+            notes: m.notes || ""
+          })).sort((a,b)=> new Date(a.date) - new Date(b.date))
+        };
+        if (typeof ch.sex !== "undefined") child.sex = ch.sex;
+        if (typeof ch.color !== "undefined") child.color = ch.color;
+        return child;
+      });
+      if (!ns.children.length) { alert("No children found in JSON"); return; }
+      if (!ns.activeChildId || !ns.children.find(c => c.id === ns.activeChildId)) {
+        ns.activeChildId = ns.children[0].id;
+      }
+      S.state = ns; U.saveState(S.state); closeModal(); window.App.render();
     });
   }
 
