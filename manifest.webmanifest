@@ -1,0 +1,24 @@
+{
+  "name": "Bloom | Child Growth Tracker",
+  "short_name": "Bloom",
+  "description": "Track your child's growth with beautiful charts, weight and height logs, and smart insights.",
+  "start_url": "app.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f62ff",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%231f62ff'/%3E%3Cpath d='M256 424s160-101.6 160-232a160 160 0 10-320 0c0 130.4 160 232 160 232z' fill='%23fff'/%3E%3C/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%231f62ff'/%3E%3Cpath d='M256 424s160-101.6 160-232a160 160 0 10-320 0c0 130.4 160 232 160 232z' fill='%23fff'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
+    }
+  ]
+}

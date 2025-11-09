@@ -16,6 +16,16 @@ $(function(){
     }
     window.App.init();
     window.App.render();
+
+    // PWA: register service worker
+    if ('serviceWorker' in navigator) {
+      var swUrl = './sw.js';
+      window.addEventListener('load', function(){
+        navigator.serviceWorker.register(swUrl).catch(function(err){
+          console.warn('SW registration failed', err);
+        });
+      });
+    }
   } catch (e) {
     console.error('Initialization failed', e);
   }
